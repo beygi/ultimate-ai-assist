@@ -1,0 +1,69 @@
+import { defineConfig, UserConfig } from 'vite';
+import { crx, ManifestV3Export } from '@crxjs/vite-plugin';
+// We import the base manifest as a JSON object
+import baseManifest from './src/manifest.json';
+
+// Define a new type that extends the base ManifestV3 type with Firefox-specific keys.
+// This tells TypeScript that 'browser_specific_settings' is a valid property.
+type FirefoxManifest = ManifestV3Export & {
+  browser_specific_settings?: {
+    gecko?: {
+      id: string;
+      strict_min_version?: string;
+    };
+  };
+};
+
+// We turn the config into a function that receives the build 'mode'
+export default defineConfig(({ mode }): UserConfig => {
+  // Use our new extended type for the manifest object
+  const manifest: FirefoxManifest = {
+    ...baseManifest,
+  };
+
+  // Apply browser-specific manifest configurations
+  if (mode === 'firefox') {
+    // For Firefox, we must use 'scripts' instead of 'service_worker'.
+    manifest.background = {
+      scripts: ['background.ts'],
+      type: 'module',
+    };
+    // It's also best practice to include a specific ID for Firefox add-ons.
+    manifest.browser_specific_settings = {
+      gecko: {
+        id: 'ai-text-helper@example.com',
+        strict_min_version: '109.0',
+      },
+    };
+  } else {
+    // For Chrome and other browsers
+    manifest.background = {
+      service_worker: 'background.ts',
+      type: 'module',
+    };
+  }
+
+  return {
+    root: 'src',
+    plugins: [crx({ manifest })],
+    build: {
+      outDir: `../dist/${mode}`,
+      emptyOutDir: true,
+      rollupOptions: {
+        input: {
+          options: 'src/options.html', // Only HTML entry
+          background: 'src/background.ts',
+          modal: 'src/modal.ts',
+        },
+        output: {
+          manualChunks: undefined, // Prevent code splitting
+          inlineDynamicImports: false, // Do not inline imports
+          entryFileNames: '[name].js', // Keep file names simple
+          chunkFileNames: '[name].js',
+          assetFileNames: '[name][extname]',
+        },
+      },
+      minify: false, // Do not minify output
+    },
+  };
+});

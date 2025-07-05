@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "AI Text Helper (Vite)",
+  "version": "1.0.0",
+  "description": "Select text and process it with your chosen AI provider.",
+  "permissions": ["storage", "activeTab", "scripting", "notifications"],
+  "host_permissions": ["https://*.googleapis.com/*", "https://api.openai.com/*"],
+  "background": {
+    "service_worker": "background.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["modal.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "options_page": "options.html",
+  "action": {
+    "default_title": "AI Text Helper Options"
+  },
+  "commands": {
+    "process-text": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+A"
+      },
+      "description": "Process selected text with the configured AI"
+    }
+  }
+}

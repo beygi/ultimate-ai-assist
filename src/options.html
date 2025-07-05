@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Text Helper Options</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-base-200 min-h-screen p-4 sm:p-8">
+    <div class="max-w-4xl mx-auto">
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h1 class="card-title text-2xl sm:text-3xl">
+            AI Text Helper Options
+          </h1>
+          <p class="text-base-content/70 mb-8">
+            Select your service provider, then configure its settings.
+          </p>
+
+          <form id="options-form" class="space-y-6">
+            <!-- Provider Selector -->
+            <div class="form-control">
+              <label class="label" for="provider-select">
+                <span class="label-text text-lg font-medium"
+                  >Service Provider</span
+                >
+              </label>
+              <select
+                id="provider-select"
+                class="select select-bordered w-full"
+              >
+                <option value="openai" selected>OpenAI (GPT)</option>
+                <option value="gemini">Google (Gemini)</option>
+              </select>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Universal Settings Fields -->
+            <div class="form-control">
+              <label class="label" for="api-key"
+                ><span class="label-text text-lg font-medium"
+                  >API Key</span
+                ></label
+              >
+              <input
+                id="api-key"
+                placeholder="Enter API Key"
+                class="input input-bordered w-full"
+              />
+            </div>
+            <div class="form-control">
+              <label class="label" for="model-name"
+                ><span class="label-text text-lg font-medium">Model Name</span
+                ><button
+                  type="button"
+                  id="reset-model"
+                  class="btn btn-ghost btn-sm"
+                >
+                  Reset
+                </button></label
+              >
+              <input
+                type="text"
+                id="model-name"
+                class="input input-bordered w-full"
+              />
+            </div>
+            <div class="form-control">
+              <label class="label" for="editable-prompt"
+                ><span class="label-text text-lg font-medium"
+                  >Prompt for Editable Fields</span
+                ><button
+                  type="button"
+                  id="reset-editable"
+                  class="btn btn-ghost btn-sm"
+                >
+                  Reset
+                </button></label
+              >
+              <textarea
+                id="editable-prompt"
+                class="textarea textarea-bordered h-24"
+              ></textarea>
+            </div>
+            <div class="form-control">
+              <label class="label" for="non-editable-prompt"
+                ><span class="label-text text-lg font-medium"
+                  >Prompt for Non-Editable Text</span
+                ><button
+                  type="button"
+                  id="reset-non-editable"
+                  class="btn btn-ghost btn-sm"
+                >
+                  Reset
+                </button></label
+              >
+              <textarea
+                id="non-editable-prompt"
+                class="textarea textarea-bordered h-24"
+              ></textarea>
+            </div>
+
+            <div class="card-actions items-center pt-4">
+              <button type="submit" class="btn btn-primary">
+                Save Settings
+              </button>
+              <div id="status-toast" class="toast toast-end"></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/options.ts"></script>
+  </body>
+</html>
