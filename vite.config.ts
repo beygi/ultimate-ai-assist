@@ -59,7 +59,7 @@ export default defineConfig(({ mode }): UserConfig => {
       emptyOutDir: true,
       rollupOptions: {
         input: {
-          options: 'src/options.html', // Only HTML entry
+          options: 'src/options.html',
           background: 'src/background.ts',
           content: 'src/content.ts',
         },

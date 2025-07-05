@@ -9,6 +9,12 @@
     "service_worker": "background.ts",
     "type": "module"
   },
+  "web_accessible_resources": [
+    {
+      "resources": ["options.css"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
