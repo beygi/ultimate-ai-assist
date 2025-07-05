@@ -1,6 +1,2 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@layer components {
-  /* DaisyUI will inject its styles automatically */
-}
+@import 'tailwindcss';
+@plugin "daisyui";

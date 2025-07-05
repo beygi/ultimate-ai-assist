@@ -14,7 +14,7 @@ interface ResolvedSettings {
 /**
  * Retrieves and resolves settings for the currently selected provider.
  */
-async function getResolvedSettings(): Promise<ResolvedSettings> {
+const getResolvedSettings = async (): Promise<ResolvedSettings> => {
   const stored = await browser.storage.local.get(null);
   const provider = stored.selectedProvider || DEFAULTS.selectedProvider;
 
@@ -30,12 +30,12 @@ async function getResolvedSettings(): Promise<ResolvedSettings> {
     editablePrompt: stored[providerKey('editablePrompt')] || providerDefaults.editablePrompt,
     nonEditablePrompt: stored[providerKey('nonEditablePrompt')] || providerDefaults.nonEditablePrompt,
   };
-}
+};
 
 /**
  * Main function to call the selected AI service.
  */
-async function callAIService(prompt: string): Promise<string> {
+const callAIService = async (prompt: string): Promise<string> => {
   const settings = await getResolvedSettings();
 
   if (!settings.apiKey) {
@@ -44,23 +44,26 @@ async function callAIService(prompt: string): Promise<string> {
 
   const providerModule = await import(`./providers/${settings.provider}.ts`);
   return providerModule.default.fetcher(prompt, settings.apiKey, settings.modelName);
-}
+};
 
 // --- Core Extension Logic ---
-function getSelectionContext(): { selectedText: string; isEditable: boolean } {
+const getSelectionContext = (): { selectedText: string; isEditable: boolean } => {
   const activeElement = document.activeElement as HTMLElement;
   const isEditable =
     activeElement &&
     (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable);
   const selectedText = window.getSelection()?.toString().trim() || '';
   return { selectedText, isEditable };
-}
-function replaceSelectedText(text: string): void {
+};
+
+const replaceSelectedText = (text: string): void => {
   document.execCommand('insertText', false, text);
-}
-function showNotification(title: string, message: string): void {
+};
+
+const showNotification = (title: string, message: string): void => {
   browser.notifications.create({ type: 'basic', iconUrl: browser.runtime.getURL('icons/icon-48.svg'), title, message });
-}
+};
+
 browser.action.onClicked.addListener(() => {
   browser.runtime.openOptionsPage();
 });
@@ -73,7 +76,7 @@ browser.commands.onCommand.addListener(async (commandName: string) => {
       target: { tabId: tab.id },
       func: getSelectionContext,
     });
-    const { selectedText, isEditable } = injectionResults[0].result;
+    const { selectedText, isEditable } = injectionResults[0].result as { selectedText: string; isEditable: boolean };
     if (!selectedText) {
       showNotification('AI Text Helper', 'No text was selected.');
       return;

@@ -1,5 +1,6 @@
 import { defineConfig, UserConfig } from 'vite';
 import { crx, ManifestV3Export } from '@crxjs/vite-plugin';
+import tailwindcss from '@tailwindcss/vite';
 // We import the base manifest as a JSON object
 import baseManifest from './src/manifest.json';
 
@@ -35,6 +36,13 @@ export default defineConfig(({ mode }): UserConfig => {
         strict_min_version: '109.0',
       },
     };
+    // Remove use_dynamic_url from web_accessible_resources for Firefox
+    if (manifest.web_accessible_resources) {
+      manifest.web_accessible_resources = manifest.web_accessible_resources.map((resource: any) => {
+        const { use_dynamic_url, ...rest } = resource;
+        return rest;
+      });
+    }
   } else {
     // For Chrome and other browsers
     manifest.background = {
@@ -45,7 +53,7 @@ export default defineConfig(({ mode }): UserConfig => {
 
   return {
     root: 'src',
-    plugins: [crx({ manifest })],
+    plugins: [crx({ manifest }), tailwindcss()],
     build: {
       outDir: `../dist/${mode}`,
       emptyOutDir: true,

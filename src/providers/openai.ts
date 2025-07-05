@@ -9,7 +9,7 @@ export default {
   /**
    * The fetcher function specific to the OpenAI API.
    */
-  fetcher: async function (prompt: string, apiKey: string, modelName: string): Promise<string> {
+  fetcher: async (prompt: string, apiKey: string, modelName: string): Promise<string> => {
     const API_URL = 'https://api.openai.com/v1/chat/completions';
 
     const requestBody = {

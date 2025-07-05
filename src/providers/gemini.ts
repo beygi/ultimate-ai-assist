@@ -9,7 +9,7 @@ export default {
   /**
    * The fetcher function specific to the Google Gemini API.
    */
-  fetcher: async function (prompt: string, apiKey: string, modelName: string): Promise<string> {
+  fetcher: async (prompt: string, apiKey: string, modelName: string): Promise<string> => {
     const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
     const response = await fetch(API_URL, {

@@ -1,7 +1,7 @@
 import './modal.css';
 
 // Modal logic using <dialog> with Tailwind and DaisyUI classes
-export function showTranslationModal(translation: string) {
+const showTranslationModal = (translation: string) => {
   let dialog = document.getElementById('ai-text-helper-modal') as HTMLDialogElement | null;
   if (!dialog) {
     dialog = document.createElement('dialog');
@@ -18,7 +18,7 @@ export function showTranslationModal(translation: string) {
   const content = dialog.querySelector('#ai-text-helper-modal-content');
   if (content) content.textContent = translation;
   dialog.showModal();
-}
+};
 
 // Listen for custom event to show modal
 window.addEventListener('ai-text-helper-show-modal', (e: Event) => {

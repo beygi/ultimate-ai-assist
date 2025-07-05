@@ -8,11 +8,11 @@ type Provider = 'gemini' | 'openai';
 const PROVIDER_MODULES = { gemini, openai };
 
 // --- Type-safe UI Element Getters ---
-function getElement<T extends HTMLElement>(id: string): T {
+const getElement = <T extends HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
   if (!el) throw new Error(`Element "${id}" not found.`);
   return el as T;
-}
+};
 
 const apiKeyInput = getElement<HTMLInputElement>('api-key');
 const modelNameInput = getElement<HTMLInputElement>('model-name');
@@ -23,18 +23,18 @@ const providerSelect = getElement<HTMLSelectElement>('provider-select');
 
 let currentProvider: Provider = DEFAULTS.selectedProvider;
 
-function showToast(message: string, type: 'success' | 'error' = 'success'): void {
+const showToast = (message: string, type: 'success' | 'error' = 'success'): void => {
   const c = getElement('status-toast');
   c.innerHTML = `<div class="alert alert-${type} shadow-lg"><div><span>${message}</span></div></div>`;
   setTimeout(() => {
     c.innerHTML = '';
   }, 3000);
-}
+};
 
 /**
  * Saves the settings for the currently displayed provider.
  */
-async function saveCurrentProviderSettings(): Promise<void> {
+const saveCurrentProviderSettings = async (): Promise<void> => {
   const providerKey = (key: string) => `${currentProvider}${key.charAt(0).toUpperCase() + key.slice(1)}`;
   const settingsToSave = {
     selectedProvider: currentProvider,
@@ -44,12 +44,12 @@ async function saveCurrentProviderSettings(): Promise<void> {
     [providerKey('nonEditablePrompt')]: nonEditablePromptTextarea.value,
   };
   await browser.storage.local.set(settingsToSave);
-}
+};
 
 /**
  * Loads settings for a given provider and populates the UI fields.
  */
-async function loadProviderSettings(provider: Provider): Promise<void> {
+const loadProviderSettings = async (provider: Provider): Promise<void> => {
   currentProvider = provider;
   providerSelect.value = provider;
 
@@ -69,16 +69,16 @@ async function loadProviderSettings(provider: Provider): Promise<void> {
   modelNameInput.value = result[storageKeys.modelName] || providerDefaults.modelName;
   editablePromptTextarea.value = result[storageKeys.editablePrompt] || providerDefaults.editablePrompt;
   nonEditablePromptTextarea.value = result[storageKeys.nonEditablePrompt] || providerDefaults.nonEditablePrompt;
-}
+};
 
-async function handleProviderChange() {
+const handleProviderChange = async () => {
   const newProvider = providerSelect.value as Provider;
   await saveCurrentProviderSettings(); // Save before switching
   await loadProviderSettings(newProvider);
   showToast(`Switched to ${newProvider}. Settings loaded.`);
-}
+};
 
-async function handleReset(field: 'modelName' | 'editablePrompt' | 'nonEditablePrompt') {
+const handleReset = async (field: 'modelName' | 'editablePrompt' | 'nonEditablePrompt') => {
   const providerDefaults = PROVIDER_MODULES[currentProvider].defaults;
   const defaultValue = providerDefaults[field];
 
@@ -87,11 +87,11 @@ async function handleReset(field: 'modelName' | 'editablePrompt' | 'nonEditableP
   if (field === 'nonEditablePrompt') nonEditablePromptTextarea.value = defaultValue;
 
   showToast(`${field} reset to default for ${currentProvider}.`);
-}
+};
 
-function applySystemTheme(isDarkMode: boolean) {
+const applySystemTheme = (isDarkMode: boolean) => {
   document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
-}
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
   const { selectedProvider = DEFAULTS.selectedProvider } = await browser.storage.local.get('selectedProvider');
