@@ -61,7 +61,7 @@ export default defineConfig(({ mode }): UserConfig => {
         input: {
           options: 'src/options.html', // Only HTML entry
           background: 'src/background.ts',
-          modal: 'src/modal.ts',
+          content: 'src/content.ts',
         },
         output: {
           manualChunks: undefined, // Prevent code splitting
@@ -72,6 +72,16 @@ export default defineConfig(({ mode }): UserConfig => {
         },
       },
       minify: false, // Do not minify output
+    },
+    // Add content.ts as a content script for all pages
+    crx: {
+      contentScripts: [
+        {
+          matches: ['<all_urls>'],
+          js: ['content.js'],
+          runAt: 'document_end',
+        },
+      ],
     },
   };
 });
