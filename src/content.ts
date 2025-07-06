@@ -3,7 +3,7 @@ import browser from 'webextension-polyfill';
 // --- Modal logic ---
 const showTranslationModal = (translation: string) => {
   setContainerHtml(`
-        <dialog id="my_modal" class="modal" open>
+        <dialog id="my_modal" class="modal" open style="background: transparent;">
               <div class="modal-box w-80">
                 <form method="dialog">
                   <!-- if there is a button in form, it will close the modal -->
@@ -13,11 +13,17 @@ const showTranslationModal = (translation: string) => {
                     ${translation}
                 </div>
               </div>
+                    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
             </dialog>
     `);
 };
 
 browser.runtime.onMessage.addListener((message) => {
+  if (message.command === 'text-replaced') {
+    setContainerHtml('');
+  }
   if (message.command === 'loading') {
     setContainerHtml(`
           <div class="flex items-center justify-center w-16 h-16 bg-accent rounded-full">

@@ -3,7 +3,7 @@ export default {
   defaults: {
     modelName: 'gemini-1.5-flash',
     editablePrompt: `Correct the following text. Do not add any commentary or introductory phrases. Only return the corrected text itself.\n\n{text}`,
-    nonEditablePrompt: `Translate the following text to both English and Persian. Format the response clearly with labels, for example:\n\nEnglish: [Translation]\nPersian: [Translation]\n\nText to translate: {text}`,
+    nonEditablePrompt: `Translate the following text to Persian. if input is just one word, try to describe it. return only desired output as text no extra formatting. Here is the text : {text}`,
   },
 
   /**

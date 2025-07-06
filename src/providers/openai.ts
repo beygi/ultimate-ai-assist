@@ -2,8 +2,8 @@ export default {
   // All default settings for this provider are co-located here.
   defaults: {
     modelName: 'gpt-4o',
-    editablePrompt: `Proofread and correct the following text. Only return the corrected text, without any of your own conversational text or explanations.\n\n{text}`,
-    nonEditablePrompt: `Please summarize the following text into three concise bullet points:\n\n{text}`,
+    editablePrompt: `Correct the following text. Do not add any commentary or introductory phrases. Only return the corrected text itself.\n\n{text}`,
+    nonEditablePrompt: `Translate the following text to Persian. if input is just one word, try to describe it. return only desired output as text no extra formatting. Here is the text : {text}`,
   },
 
   /**

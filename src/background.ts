@@ -82,6 +82,7 @@ const processText = async (): Promise<void> => {
         func: replaceSelectedText,
         args: [aiResponse],
       });
+      browser.tabs.sendMessage(tab.id, { command: 'text-replaced', text: aiResponse });
     } else {
       browser.tabs.sendMessage(tab.id, { command: 'show-modal', text: aiResponse });
     }
@@ -99,6 +100,7 @@ browser.commands.onCommand.addListener(async (commandName: string) => {
   if (commandName !== 'process-text') return;
   await processText();
 });
+
 browser.runtime.onMessage.addListener(async (message) => {
   if (message.command === 'process-text') {
     await processText();
