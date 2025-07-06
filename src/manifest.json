@@ -11,7 +11,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["options.css"],
+      "resources": ["options.css", "icon.png"],
       "matches": ["<all_urls>"]
     }
   ],
@@ -33,5 +33,8 @@
       },
       "description": "Process selected text with the configured AI"
     }
+  },
+  "icons": {
+    "128": "icon.png"
   }
 }

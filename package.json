@@ -1,7 +1,7 @@
 {
-  "name": "ai-text-helper-vite",
+  "name": "ultimate-ai-assist",
   "version": "1.0.0",
-  "description": "A cross-browser extension built with Vite and TypeScript.",
+  "description": "Select text and process it with your chosen AI provider.",
   "private": true,
   "type": "module",
   "engines": {

@@ -87,7 +87,7 @@ const processText = async (): Promise<void> => {
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-    browser.tabs.sendMessage(tab.id, { command: 'show-modal', text: errorMessage });
+    browser.tabs.sendMessage(tab.id, { command: 'show-error', text: errorMessage.toString() });
   }
 };
 
