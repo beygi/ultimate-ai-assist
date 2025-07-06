@@ -9,9 +9,8 @@ const showTranslationModal = (translation: string) => {
                   <!-- if there is a button in form, it will close the modal -->
                   <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 </form>
-                <h3 class="font-bold text-lg mb-2">Simple Modal Box</h3>
-                <div class="py-4">
-                    <p>${translation}</p>
+                <div class="py-4 text-start" dir="auto">
+                    ${translation}
                 </div>
               </div>
             </dialog>
@@ -67,6 +66,7 @@ const getShadow = (x?: number, y?: number) => {
 
     // Attach shadow root
     const shadow = container.attachShadow({ mode: 'open' });
+
     const style = document.createElement('link');
     style.rel = 'stylesheet';
     style.href = browser.runtime.getURL('options.css');
@@ -136,7 +136,13 @@ const createButton = () => {
   }
 };
 
-function showButtonNearSelection() {
+function showButtonNearSelection(e: MouseEvent) {
+  const container = document.getElementById(SHADOW_ID);
+  // Check if the click target is the shadow host element or any element inside it
+
+  if (container && e.target === container) {
+    return;
+  }
   const selection = window.getSelection();
   if (!selection || selection.isCollapsed || !selection.toString().trim()) {
     hideShadowContainer();
@@ -155,5 +161,4 @@ function showButtonNearSelection() {
   createButton();
 }
 
-document.addEventListener('selectionchange', showButtonNearSelection);
-//document.addEventListener('scroll', removeBrainBtn, true);
+document.addEventListener('mouseup', showButtonNearSelection);
