@@ -1,7 +1,14 @@
 import browser from 'webextension-polyfill';
 import { DEFAULTS } from './defaults';
+import geminiProvider from './providers/gemini';
+import openaiProvider from './providers/openai';
 
 type Provider = 'gemini' | 'openai';
+
+const providers = {
+  gemini: geminiProvider,
+  openai: openaiProvider,
+};
 
 type ResolvedSettings = {
   provider: Provider;
@@ -17,10 +24,8 @@ type ResolvedSettings = {
 const getResolvedSettings = async (): Promise<ResolvedSettings> => {
   const stored = await browser.storage.local.get(null);
   const provider: Provider = (stored.selectedProvider as Provider) || DEFAULTS.selectedProvider;
-
-  const providerModule = await import(`./providers/${provider}.ts`);
-  const providerDefaults = providerModule.default.defaults;
-
+  const providerModule = providers[provider];
+  const providerDefaults = providerModule.defaults;
   const providerKey = (key: string) => `${provider}${key.charAt(0).toUpperCase() + key.slice(1)}`;
 
   return {
@@ -43,49 +48,24 @@ const callAIService = async (prompt: string): Promise<string> => {
     throw new Error(`API Key for ${settings.provider} is not set. Please configure it in the options.`);
   }
 
-  const providerModule = await import(`./providers/${settings.provider}.ts`);
-  return providerModule.default.fetcher(prompt, settings.apiKey, settings.modelName);
+  const providerModule = providers[settings.provider];
+  return providerModule.fetcher(prompt, settings.apiKey, settings.modelName);
 };
 
 // --- Core Extension Logic ---
-const getSelectionContext = (): { selectedText: string; isEditable: boolean } => {
-  const activeElement = document.activeElement as HTMLElement;
-  const isEditable =
-    activeElement &&
-    (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable);
-  const selectedText = window.getSelection()?.toString().trim() || '';
-  return { selectedText, isEditable };
-};
 
-const replaceSelectedText = (text: string): void => {
-  document.execCommand('insertText', false, text);
-};
-
-const processText = async (): Promise<void> => {
+const processText = async (selectedText: string, isEditable: boolean): Promise<void> => {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) return;
+  console.log(selectedText);
   try {
-    const injectionResults = await browser.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: getSelectionContext,
-    });
-    const { selectedText, isEditable } = injectionResults[0].result as { selectedText: string; isEditable: boolean };
     if (!selectedText) return;
     const settings = await getResolvedSettings();
     const promptTemplate = isEditable ? settings.editablePrompt : settings.nonEditablePrompt;
     const finalPrompt = promptTemplate.replace('{text}', selectedText);
     browser.tabs.sendMessage(tab.id, { command: 'loading' });
     const aiResponse = await callAIService(finalPrompt);
-    if (isEditable) {
-      await browser.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: replaceSelectedText,
-        args: [aiResponse],
-      });
-      browser.tabs.sendMessage(tab.id, { command: 'text-replaced', text: aiResponse });
-    } else {
-      browser.tabs.sendMessage(tab.id, { command: 'show-modal', text: aiResponse });
-    }
+    browser.tabs.sendMessage(tab.id, { command: 'show-modal', aiResponse, selectedText, isEditable });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     browser.tabs.sendMessage(tab.id, { command: 'show-error', text: errorMessage.toString() });
@@ -96,13 +76,14 @@ browser.action.onClicked.addListener(() => {
   browser.runtime.openOptionsPage();
 });
 
-browser.commands.onCommand.addListener(async (commandName: string) => {
-  if (commandName !== 'process-text') return;
-  await processText();
-});
+// browser.commands.onCommand.addListener(async (commandName: string) => {
+//   if (commandName !== 'process-text') return;
+//   await processText();
+// });
 
-browser.runtime.onMessage.addListener(async (message) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+browser.runtime.onMessage.addListener(async (message: any) => {
   if (message.command === 'process-text') {
-    await processText();
+    await processText(message.selectedText, message.isEditable);
   }
 });

@@ -14,6 +14,8 @@
     "dev:chrome": "vite build --watch --mode chrome",
     "build:firefox": "vite build --mode firefox",
     "build:chrome": "vite build --mode chrome",
+    "package:chrome": "pnpm build:chrome && cd dist/chrome && zip -r ../chrome-extension.zip .",
+    "package:firefox": "pnpm build:firefox && cd dist/firefox && zip -r ../firefox-extension.zip .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

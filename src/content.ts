@@ -35,9 +35,36 @@ browser.runtime.onMessage.addListener((message) => {
     showTranslationModal(message.text);
   }
   if (message.command === 'show-modal') {
-    showTranslationModal(message.text);
+    const { aiResponse, selectedText, isEditable } = message;
+    if (isEditable) {
+      replaceTextInActiveElement(selectedText, aiResponse);
+    }
+    showTranslationModal(aiResponse);
   }
 });
+
+function replaceTextInActiveElement(originalText: string, newText: string) {
+  const el = document.activeElement;
+  if (!el || el === document.body) return false;
+
+  const isInput = el.tagName === 'INPUT' || el.tagName === 'TEXTAREA';
+
+  // Exit if the element is not editable
+  if (!isInput || (isInput && (el.disabled || el.readonly))) {
+    return false;
+  }
+
+  // Get current text and check if it matches the original
+  const currentText = isInput ? el.value : el.textContent;
+  if (!currentText.trim().includes(originalText.trim())) {
+    return false;
+  }
+
+  // Perform the replacement and return success
+  // For input elements, replace the value
+  el.value = currentText.replace(originalText, newText);
+  return true;
+}
 
 const SHADOW_ID = 'ultimate-ai-assist-shadow';
 const SHADOW_CONTAINER_ID = 'ultimate-ai-assist-shadow-container';
@@ -129,11 +156,25 @@ const createButton = () => {
   if (btn) {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      browser.runtime.sendMessage({ command: 'process-text' });
+      processText();
     });
     btn.addEventListener('mousedown', (e) => e.stopPropagation());
     btn.addEventListener('mouseup', (e) => e.stopPropagation());
   }
+};
+
+const processText = () => {
+  const selection = window.getSelection();
+  if (!selection || selection.isCollapsed || !selection.toString().trim()) {
+    return;
+  }
+  const selectedText = selection.toString().trim();
+  const isEditable = document.activeElement && (document.activeElement as HTMLElement).isContentEditable;
+  browser.runtime.sendMessage({
+    command: 'process-text',
+    selectedText,
+    isEditable,
+  });
 };
 
 function showButtonNearSelection(e: MouseEvent) {
